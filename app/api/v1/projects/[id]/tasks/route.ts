@@ -1,12 +1,12 @@
 import type { NextRequest } from "next/server";
-import { getPaginationParams, parseId, toErrorResponse } from "@/app/lib/api/route-utils";
-import { getProjectTasks } from "@/app/services/projects";
+import { parseId, toErrorResponse } from "@/app/lib/api/route-utils";
+import { unwrap } from "@/app/lib/api/result";
+import { getAllProjectTasks } from "@/app/services/cached";
 
-export async function GET(request: NextRequest, ctx: RouteContext<"/api/v1/projects/[id]/tasks">) {
+export async function GET(_request: NextRequest, ctx: RouteContext<"/api/v1/projects/[id]/tasks">) {
   try {
     const { id } = await ctx.params;
-    const tasks = await getProjectTasks(parseId(id), getPaginationParams(request.nextUrl.searchParams));
-    return Response.json(tasks);
+    return Response.json(unwrap(await getAllProjectTasks(parseId(id))));
   } catch (error) {
     return toErrorResponse(error);
   }

@@ -1,12 +1,12 @@
 import type { NextRequest } from "next/server";
 import { parseId, toErrorResponse } from "@/app/lib/api/route-utils";
-import { getProject } from "@/app/services/projects";
+import { unwrap } from "@/app/lib/api/result";
+import { getProjectById } from "@/app/services/cached";
 
 export async function GET(_request: NextRequest, ctx: RouteContext<"/api/v1/projects/[id]">) {
   try {
     const { id } = await ctx.params;
-    const project = await getProject(parseId(id));
-    return Response.json(project);
+    return Response.json(unwrap(await getProjectById(parseId(id))));
   } catch (error) {
     return toErrorResponse(error);
   }

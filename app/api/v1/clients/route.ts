@@ -1,11 +1,12 @@
-import type { NextRequest } from "next/server";
-import { getPaginationParams, toErrorResponse } from "@/app/lib/api/route-utils";
-import { getClients } from "@/app/services/clients";
+import { connection } from "next/server";
+import { toErrorResponse } from "@/app/lib/api/route-utils";
+import { unwrap } from "@/app/lib/api/result";
+import { getAllClients } from "@/app/services/cached";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const clients = await getClients(getPaginationParams(request.nextUrl.searchParams));
-    return Response.json(clients);
+    await connection();
+    return Response.json(unwrap(await getAllClients()));
   } catch (error) {
     return toErrorResponse(error);
   }
