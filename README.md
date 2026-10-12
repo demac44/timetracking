@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Memtime Time Tracking
 
-## Getting Started
+A small time-tracking workspace built on the Memtime interview API. Browse clients, projects and tasks, review your time entries, and create, edit or delete them.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Client → Project → Task tree.** Each level loads only when expanded, so browsing stays inside the API's 15 requests per minute. It includes a client filter, keyboard navigation and a "Log time" shortcut on every task.
+- **Time entries table.** Sorting and pagination are kept in the URL. Times show in the user's time zone, with a computed duration column. Delete has an Undo.
+- **Create / edit drawer.** The drawer opens from the URL (`?entry=new`, `?entry=<id>`).
+  - The task picker shows recent tasks and lets you drill down client → project → task.
+  - Time input is forgiving (`930`, `9a`, `1h30`), and start, end and duration stay in sync.
+  - Validation errors appear inline. The API's 400 and 404 errors and rate limits each get a clear message.
+
+## Tech stack
+
+- **Framework:** Next.js 16 (App Router, Cache Components, Server Actions), React 19, TypeScript
+- **UI:** [shadcn/ui](https://ui.shadcn.com) (Radix) with Tailwind CSS v4, lucide icons and sonner toasts
+- **Validation:** zod, with one schema shared by the browser and the server
+- **Tests:** Vitest unit tests for time parsing, validation and form logic
+
+## Getting started
+
+Create a `.env` file:
+
+```
+API_BASE_URL=https://interview-api.memtime-demo.deno.net/api/v1
+API_TOKEN=<your api key>
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+```bash
+npm install
+npm run dev     # http://localhost:3000
+npm test        # unit tests
+npm run build   # production build
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## How it works
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **API client** (`app/lib/api/client.ts`): a server-only `fetch` wrapper.
+  - Adds the Bearer token, a 10s timeout and typed errors.
+  - Tracks the rate limit from the API's headers and stops calling the API once the limit is reached.
+- **Services** (`app/services/`): typed functions for each endpoint. `cached.ts` wraps the reads in `'use cache'`:
+  - Clients, projects and tasks are cached for hours, and time entries for minutes.
+  - Readers return result objects instead of throwing, so error statuses survive the cache.
+- **Route handlers** (`app/api/v1/`): mirror the Memtime API, so the browser can fetch through the app without ever seeing the API key.
+  - `userId` is removed from time entries, because it contains the key.
+- **Server Actions** (`app/actions/time-entries.ts`): create, update and delete. Each one validates with zod and invalidates the cached entries, so the table refreshes right away.
 
-## Learn More
+## Folder structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+app/
+  actions/            Server Actions
+  api/v1/             Route handlers that forward to the Memtime API
+  components/
+    ui/               shadcn/ui components
+    shared/           Components used across features
+    <feature>/        <feature>.tsx plus _components/, hooks/, lib/, types/
+  hooks/              Shared client hooks
+  lib/                API client, time parsing, validation, URL params
+  services/           Endpoint functions and cached readers
+  types/              API and shared types
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The features are `project-tree`, `time-entries`, `time-entry-form`, `entry-drawer` and `workspace-shell`. A component that has its own subcomponents gets its own folder with an `_components/` directory.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## API notes
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The live API differs from its documentation in a few ways:
+- **Data shape:** statuses are `pending` / `in-progress` / `completed`, tasks have `projectId`, and ids start at 0.
+- **Sorting:** results by `start` are unreliable after an entry is updated, so each page is also sorted in the app.
+- **Persistence:** the demo data appears to reset from time to time.
