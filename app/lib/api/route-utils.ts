@@ -1,3 +1,4 @@
+import { unstable_rethrow } from "next/navigation";
 import type { PaginationParams, SortOrder } from "@/app/types/api";
 import { ApiError } from "./errors";
 
@@ -52,6 +53,8 @@ export async function parseJsonBody<T>(request: Request): Promise<T> {
 }
 
 export function toErrorResponse(error: unknown) {
+  unstable_rethrow(error);
+
   if (error instanceof ApiError) {
     return Response.json({ error: error.message }, { status: error.status });
   }
