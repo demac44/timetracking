@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { PaneError } from "@/app/components/shared/pane-error";
+import { deleteWithUndo } from "@/app/components/time-entries/lib/delete-with-undo";
 import { getRememberedEntry } from "@/app/components/time-entries/lib/entry-store";
-import { deleteWithUndo } from "@/app/components/time-entries/lib/pending-deletes";
 import { TimeEntryForm } from "@/app/components/time-entry-form/time-entry-form";
 import { useFetch } from "@/app/hooks/use-fetch";
 import type { TimeEntry } from "@/app/types/time-entry";

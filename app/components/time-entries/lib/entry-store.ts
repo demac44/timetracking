@@ -7,12 +7,23 @@ const HIGHLIGHT_MS = 2500;
 
 const entriesById = new Map<number, TimeEntry>();
 
+let currentPageIds: ReadonlySet<number> = new Set();
+
 export const hiddenEntryIds = createStore<ReadonlySet<number>>(new Set());
 
 export const highlightedEntryId = createStore<number | null>(null);
 
 export function rememberEntries(entries: TimeEntry[]) {
   entries.forEach((entry) => entriesById.set(entry.id, entry));
+}
+
+export function setCurrentPage(entries: TimeEntry[]) {
+  currentPageIds = new Set(entries.map((entry) => entry.id));
+  rememberEntries(entries);
+}
+
+export function isOnCurrentPage(id: number) {
+  return currentPageIds.has(id);
 }
 
 export function forgetEntry(id: number) {

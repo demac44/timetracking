@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect } from "react";
+import { isDeleteInFlight } from "@/app/components/time-entries/lib/delete-with-undo";
 import {
   hiddenEntryIds,
   highlightedEntryId,
+  isOnCurrentPage,
   releaseHiddenEntries,
-  rememberEntries,
+  setCurrentPage,
 } from "@/app/components/time-entries/lib/entry-store";
-import { isDeletePending } from "@/app/components/time-entries/lib/pending-deletes";
 import { useStore } from "@/app/hooks/use-store";
 import type { TimeEntry } from "@/app/types/time-entry";
 
@@ -16,10 +17,8 @@ export function useVisibleEntries(entries: TimeEntry[]) {
   const highlightedId = useStore(highlightedEntryId);
 
   useEffect(() => {
-    rememberEntries(entries);
-
-    const presentIds = new Set(entries.map((entry) => entry.id));
-    releaseHiddenEntries((id) => !presentIds.has(id) && !isDeletePending(id));
+    setCurrentPage(entries);
+    releaseHiddenEntries((id) => !isOnCurrentPage(id) && !isDeleteInFlight(id));
   }, [entries]);
 
   useEffect(() => {

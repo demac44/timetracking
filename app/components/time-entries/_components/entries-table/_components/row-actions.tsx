@@ -2,7 +2,7 @@
 
 import { MoreHorizontalIcon, PencilIcon, Trash2Icon } from "lucide-react";
 import { openEntryDrawer } from "@/app/components/entry-drawer/lib/drawer-navigation";
-import { deleteWithUndo } from "@/app/components/time-entries/lib/pending-deletes";
+import { deleteWithUndo } from "@/app/components/time-entries/lib/delete-with-undo";
 import { Button } from "@/app/components/ui/button";
 import {
   DropdownMenu,
