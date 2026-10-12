@@ -30,7 +30,7 @@ export function TimeEntryForm({ entry, initialTaskId, onDirtyChange, onCancel, o
 
   return (
     <form onSubmit={handleSubmit} noValidate className="flex min-h-0 flex-1 flex-col" aria-busy={isPending}>
-      <div className="flex-1 space-y-5 overflow-y-auto px-4 pb-4">
+      <div className="relative flex-1 space-y-5 overflow-y-auto px-4 pb-4">
         {form.failure && (
           <FormErrorBanner failure={form.failure} isEditing={entry !== null} onSaveAsNew={() => form.save(true)} />
         )}

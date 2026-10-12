@@ -24,7 +24,7 @@ export function TreeView({ clients }: { clients: Client[] }) {
         <ul
           role="tree"
           aria-label="Clients, projects and tasks"
-          className="min-h-0 flex-1 overflow-y-auto p-2"
+          className="relative min-h-0 flex-1 overflow-y-auto p-2"
           onKeyDown={(event) => handleTreeKeyDown(event, tree)}
         >
           {visibleClients.map((client) => (

@@ -32,7 +32,7 @@ export function WorkspaceShell({ header, sidebar, main }: WorkspaceShellProps) {
         <TabsContent
           value="entries"
           forceMount
-          className="data-[state=inactive]:hidden lg:min-h-0 lg:overflow-y-auto lg:data-[state=inactive]:block"
+          className="relative data-[state=inactive]:hidden lg:min-h-0 lg:overflow-y-auto lg:data-[state=inactive]:block"
         >
           <main className="mx-auto flex w-full max-w-6xl flex-col gap-5 p-4 lg:p-6">{main}</main>
         </TabsContent>
