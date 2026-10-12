@@ -1,4 +1,4 @@
-# Memtime Time Tracking
+# Time Tracking app
 
 A small time-tracking workspace built on the Memtime interview API. Browse clients, projects and tasks, review your time entries, and create, edit or delete them.
 
