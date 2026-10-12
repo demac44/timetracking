@@ -17,3 +17,7 @@ export type TimeEntryInput = Pick<TimeEntry, "taskId" | "comment" | "start" | "e
 export interface DeleteTimeEntryResponse {
   message: string;
 }
+
+export const TIME_ENTRY_SORT_FIELDS = ["id", "start", "end", "createdAt"] as const;
+
+export type TimeEntrySortField = (typeof TIME_ENTRY_SORT_FIELDS)[number];

@@ -1,8 +1,10 @@
+import type { EntityStatus } from "./api";
+
 export interface Task {
   id: number;
-  parent: number;
+  projectId: number;
   name: string;
-  status: string;
+  status: EntityStatus;
   createdAt: string;
   updatedAt: string;
 }
